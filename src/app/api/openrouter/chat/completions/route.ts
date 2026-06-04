@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
 
+export const runtime = 'nodejs';
+
 const BASE_URL = (process.env.OPENROUTER_BASE_URL || process.env.NEXT_PUBLIC_OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1').replace(/\/$/, '');
 
 export async function POST(request: Request) {
   try {
+    console.log('Checking OPENROUTER_API_KEY:', !!process.env.OPENROUTER_API_KEY);
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
+      console.error('OPENROUTER_API_KEY is missing!');
       return NextResponse.json({ error: 'OpenRouter API key is missing on the server' }, { status: 500 });
     }
 
