@@ -76,7 +76,11 @@ const RESPONSE_CACHE: Record<string, string> = {
   "college admission kab chalu honge": "Lohia College admission (Session 2026-27) 1 May 2026 se chalu ho chuke hain.",
   "admission documents": "Admission ke liye 10th-12th marksheet, Aadhaar, Jan Aadhaar, ABC ID, Caste & Domicile cert, photo aur SSO ID chahiye.",
   "admission contact": "Admission form bharne mein help ke liye aap 9509932564 par WhatsApp kar sakte hain.",
+  "exam form": "Lohia College mein admission form aur exam form (for first year/part 1) ka ek hi matlab hai. Session 2026-27 ke liye online admission forms 1 May 2026 se start ho chuke hain aur antim tithi 6 June 2026 hai.",
   "exam form kab start honge": "Lohia College (Session 2026-27) ke admission forms 1 May 2026 se start ho chuke hain aur antim tithi 6 june 2026 hai. Lohia College mein admission form aur exam form (for first year) ka ek hi matlab hai.",
+  "exam form kab bhare jayenge": "Lohia College (Session 2026-27) ke admission/exam forms 1 May 2026 se bhare ja rahe hain aur antim tithi 6 june 2026 hai. Lohia College mein admission form aur exam form ka ek hi matlab hai.",
+  "exam form date": "Lohia College mein regular admission/exam form (Session 2026-27) bharne ki dates 1 May 2026 se 6 June 2026 tak hai.",
+  "exam form last date": "Lohia College mein admission/exam form (Session 2026-27) bharne ki antim tithi 6 June 2026 hai.",
   "non collegiate exam kab hai": "Non-Collegiate (N.C.) students ke exams regular students ke saath ya unke turant baad hote hain. Specific schedule ke liye [[EXAM_EXPLORER]] check karein.",
   "hi": "Namaste! Main Lohia College AI Assistant hoon. Admission, exams, faculty, events, notices ya college ki kisi bhi jaankari me madad kar sakti hoon.",
   "hello": "Hello! I am Lohia College AI Assistant. How can I help you today with admissions, exams, or faculty information?",
@@ -132,7 +136,7 @@ const SEMANTIC_MAPPING: Record<string, string> = {
   "hindi literature": "litteture",
   "ncc": "NCC",
   "library": "Library",
-  "exam form": "Exam Search",
+  "exam form": "admission form",
   "sociolgoy": "Sociology",
   "socio": "Sociology",
   "geog": "Geography",
@@ -435,15 +439,15 @@ const inferExamSubject = (text: string) => {
 
 const inferExamStatus = (text: string) => {
   const lower = text.toLowerCase();
-  if (/non[-\s]?collegiate|non\s*college|noncollege|private|à¤à¤¨\s*à¤¸à¥€|à¤¨à¥‰à¤¨/.test(lower)) return 'Non-Collegiate';
-  if (/collegiate|regular|college student|regular student|à¤°à¥‡à¤—à¥à¤²à¤°/.test(lower)) return 'Collegiate';
+  if (/non[-\s]?collegiate|non\s*college|noncollege|private|à¤\u0080à¤¨\s*à¤¸à¥€|à¤¨¥\u0089à¤¨/.test(lower)) return 'Non-Collegiate';
+  if (/collegiate|regular|college student|regular student|à¤°à¥\u0087à¤—à¥\u0081à¤²à¤°/.test(lower)) return 'Collegiate';
   return undefined;
 };
 
 const inferExamLevel = (text: string) => {
   const lower = text.toLowerCase();
-  if (/\bpg\b|post\s*graduate|postgraduate|m\.?sc|m\.?a|m\.?com|à¤à¤®\s*à¤|à¤à¤®\s*à¤à¤¸à¤¸à¥€/.test(lower)) return 'PG';
-  if (/\bug\b|\bgraduate\b|under\s*graduate|undergraduate|b\.?sc|b\.?a|b\.?com|à¤¬à¥€\s*à¤|à¤¬à¥€\s*à¤à¤¸à¤¸à¥€/.test(lower)) return 'UG';
+  if (/\bpg\b|post\s*graduate|postgraduate|m\.?sc|m\.?a|m\.?com|à¤ à¤®\s*à¤ |à¤ à¤®\s*à¤ à¤¸à¤¸à¥€/.test(lower)) return 'PG';
+  if (/\bug\b|\bgraduate\b|under\s*graduate|undergraduate|b\.?sc|b\.?a|b\.?com|à¤¬à¥€\s*à¤ |à¤¬à¥€\s*à¤ à¤¸à¤¸à¥€/.test(lower)) return 'UG';
   return undefined;
 };
 
@@ -451,19 +455,19 @@ const inferExamSemester = (text: string) => {
   const lower = text.toLowerCase();
   const numeric = lower.match(/\bsem(?:ester)?\s*[-:]?\s*([1-6])\b|\b([1-6])(?:st|nd|rd|th)?\s*sem(?:ester)?\b/);
   if (numeric) return numeric[1] || numeric[2];
-  if (/first|1st|sem\s*one|semester\s*one|à¤«à¤°à¥à¤¸à¥à¤Ÿ|à¤ªà¤¹à¤²à¤¾|à¤ªà¥à¤°à¤¥à¤®/.test(lower)) return '1';
-  if (/second|2nd|sem\s*two|semester\s*two|à¤¸à¥‡à¤•à¤‚à¤¡|à¤¦à¥‚à¤¸à¤°à¤¾|à¤¦à¥à¤µà¤¿à¤¤à¥€à¤¯/.test(lower)) return '2';
-  if (/third|3rd|sem\s*three|semester\s*three|à¤¥à¤°à¥à¤¡|à¤¤à¥€à¤¸à¤°à¤¾|à¤¤à¥ƒà¤¤à¥€à¤¯/.test(lower)) return '3';
-  if (/fourth|4th|sem\s*four|semester\s*four|à¤«à¥‹à¤°à¥à¤¥|à¤šà¥Œà¤¥à¤¾/.test(lower)) return '4';
-  if (/fifth|5th|sem\s*five|semester\s*five|à¤«à¤¿à¤«à¥à¤¥|à¤ªà¤¾à¤‚à¤šà¤µà¤¾/.test(lower)) return '5';
-  if (/sixth|6th|sem\s*six|semester\s*six|à¤¸à¤¿à¤•à¥à¤¸à¥à¤¥|à¤›à¤ à¤¾/.test(lower)) return '6';
+  if (/first|1st|sem\s*one|semester\s*one|à¤«à¤°à¥ à¤¸à¥ à¤Ÿ|à¤ªà¤¹à¤²à¤¾|à¤ªà¥ à¤°à¤¥à¤®/.test(lower)) return '1';
+  if (/second|2nd|sem\s*two|semester\s*two|à¤¸à¥‡à¤•à¤‚à¤¡|à¤¦à¥‚à¤¸à¤°à¤¾|à¤¦à¥ à¤µà¤¿à¤¤à¥€à¤¯/.test(lower)) return '2';
+  if (/third|3rd|sem\s*three|semester\s*three|à¤¥à¤°à¥ à¤¡|à¤¤à¥€à¤¸à¤°à¤¾|à¤¤à¥ƒà¤¤à¥€à¤¯/.test(lower)) return '3';
+  if (/fourth|4th|sem\s*four|semester\s*four|à¤«à¥‹à¤°à¥ à¤¥|à¤šà¥Œà¤¥à¤¾/.test(lower)) return '4';
+  if (/fifth|5th|sem\s*five|semester\s*five|à¤«à¤¿à¤«à¥ à¤¥|à¤ªà¤¾à¤‚à¤šà¤µà¤¾/.test(lower)) return '5';
+  if (/sixth|6th|sem\s*six|semester\s*six|à¤¸à¤¿à¤•à¥ à¤¸à¥ à¤¥|à¤›à¤ à¤¾/.test(lower)) return '6';
   return undefined;
 };
 
 const hasExamScheduleIntent = (text: string) => {
   const lower = text.toLowerCase();
-  const asksDate = /paper|exam|timetable|schedule|date|kab|à¤•à¤¬|à¤ªà¥‡à¤ªà¤°|à¤ªà¤°à¥€à¤•à¥à¤·à¤¾|à¤Ÿà¤¾à¤‡à¤®\s*à¤Ÿà¥‡à¤¬à¤²/.test(lower);
-  const isAdmissionForm = /admission|à¤ªà¥à¤°à¤µà¥‡à¤¶|form\s*start|exam\s*form\s*kab\s*start/.test(lower);
+  const asksDate = /paper|exam|timetable|schedule|date|kab|à¤•à¤¬|à¤ªà¥‡à¤ªà¤°|à¤ªà¤°à¥€à¤•à¥ à¤·à¤¾|à¤Ÿà¤¾à¤‡à¤®\s*à¤Ÿà¥‡à¤¬à¤²/.test(lower);
+  const isAdmissionForm = /admission|à¤ªà¥ à¤°à¤µà¥‡à¤¶|form\s*start|exam\s*form|pariksha\s*form|परीक्षा\s*फ़ॉर्म|परीक्षा\s*फार्म/.test(lower);
   const isPersonDate = /joining|join\s*date|college\s*join|service\s*date|dob|date\s*of\s*birth|sir|mam|madam|teacher|faculty|professor/.test(lower);
   const isNonExamWhen = /marmat|repair|renovation|nirman|construction|bca|course|address|contact|phone|number|स्थापना|मरम्मत|निर्माण/.test(lower);
   return asksDate && !isAdmissionForm && !isPersonDate && !isNonExamWhen;
@@ -1178,7 +1182,7 @@ const SYSTEM_PROMPT = `You are "Lohia College AI", a High-Performance Multi-Agen
 - If context has a matched person, answer the user's requested field(s) first. Show a profile/explorer only when the user explicitly asks for photo, profile, full details, card, or "dikhao".
 - For Vision/Mission/Hostel/Exam Rules: If user asks a SPECIFIC QUESTION (like "how many rooms in hostel?", "how many books in library?"), extract ONLY the exact answer they asked for from the available data. If they ask for GENERAL INFORMATION, provide the full relevant context.
 - For "passing marks" or "score" queries, ALWAYS check the 'customRules' from context or call 'get_exam_passing_rules' and provide detailed, accurate information based ONLY on that data.
-- **EXAM FORM**: Use this ONLY if the user has NOT provided subject, status, level, or semester. If they have already searched (as in [Context]) and results were missing, DO NOT show this form. Marker: [[EXAM_FORM:SubjectName]].
+- **EXAM FORM**: Use this ONLY if the user has NOT provided subject, status, level, or semester. If they have already searched (as in [Context]) and results were missing, DO NOT show this form. Marker: [[EXAM_FORM:SubjectName]]. CRITICAL: Do NOT output the interactive exam form ('[[EXAM_FORM:...]]') or exam explorer ('[[EXAM_EXPLORER:...]]') if the user is asking about "exam form" (परीक्षा फॉर्म). At Lohia College, "exam form" for first year/part 1 means the admission form. Give the regular admission details instead (online admission starts 1 May 2026, last date 6 June 2026, Nodal Officer Dr. Umed Singh Gothwal).
 - **ADMISSION FORM**: If they ask for "admission form" or "new entry form", show the admission details.
 - **NO REPETITIVE FORMS**: If [Context] says results were not found or if the user already provided all details, DO NOT show any form again. Use the guidance in [Context] to explain the situation. For simple greetings like "hi", "hello", DO NOT show any forms.
 - **TOPPERS**: For questions about gold medalists, toppers, or merit list, ALWAYS call the merit search or use [COLLEGE_CONTEXT]. Do NOT use [[TOPPERS_EXPLORER]] unless the user explicitly asks to open/show the interactive topper explorer. Answer in a polished Markdown table with columns like Year, Board/Course, Student, Position, Division/Remarks. If 2+ records match, show all relevant rows in the table.
@@ -1298,7 +1302,16 @@ Instruction: Answer topper/merit questions from these rows in a clean Markdown t
   }
 
   // 2. Admission 2026-27 Metadata (Keep this high-level - let tool fetch courses lazily!)
-  if (lowerPrompt.includes('admission') || lowerPrompt.includes('pravesh') || lowerPrompt.includes('naye form') || lowerPrompt.includes('new form')) {
+  if (
+    lowerPrompt.includes('admission') || 
+    lowerPrompt.includes('pravesh') || 
+    lowerPrompt.includes('naye form') || 
+    lowerPrompt.includes('new form') ||
+    lowerPrompt.includes('exam form') ||
+    lowerPrompt.includes('pariksha form') ||
+    lowerPrompt.includes('परीक्षा फॉर्म') ||
+    lowerPrompt.includes('परीक्षा फार्म')
+  ) {
     const allMatches = await searchAllCollegeData(`${prompt} admission courses seats`);
     const matchesContext = allMatches.length > 0
       ? `\n\n[UNIVERSAL_COLLEGE_MATCHES]: ${JSON.stringify(allMatches).substring(0, 7000)}`
@@ -1306,6 +1319,7 @@ Instruction: Answer topper/merit questions from these rows in a clean Markdown t
     return `Context: 
 - UG Admission 2026-27 is LIVE from May 1 to June 6, 2026.
 - Nodal Officer UG Admission: Dr. Umed Singh Gothwal (Phone: 9414203821).
+- Lohia College mein admission form aur exam form (for first year/part 1) ka ek hi matlab hai. Jab koi user exam form ke baare me puche, to use regular admission details hi dein aur koi bhi interactive exam form (EXAM_FORM or EXAM_EXPLORER) open na karein.
 - For specific stream contacts, conveners, courses seats, or admission procedures, use the college matches below first and call 'search_courses' or 'get_college_info_sections' if more detail is needed.${matchesContext}`;
   }
 
