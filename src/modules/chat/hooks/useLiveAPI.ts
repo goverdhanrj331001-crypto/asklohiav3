@@ -478,12 +478,7 @@ export function useLiveAPI() {
     if (!apiKey) {
       throw new Error("Live Voice chat requires a Google Gemini API Key. Please set NEXT_PUBLIC_LOHIA_COLLEGE_VOICE_KEY in your .env file.");
     }
-      const ai = new GoogleGenAI({ 
-        apiKey,
-        httpOptions: {
-          baseUrl: 'https://voice.asklohia.online'
-        }
-      });
+      const ai = new GoogleGenAI({ apiKey });
 
       // Fetch dynamic college comprehensive context
       let contextInfo = "College Name: Lohia College.\\n";
